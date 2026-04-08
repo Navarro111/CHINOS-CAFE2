@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 POS CHINOS-CAFE </title>
+    <title>🚀 POS Modern - Punto de Venta</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script type="module" src="firebase-config.js" defer></script>
-    <script type="module" src="script.js" defer></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -15,15 +13,15 @@
         <div class="header-content">
             <div class="logo">
                 <i class="fas fa-cash-register"></i>
-                <h1>POS CHINOS-CAFE </h1>
+                <h1>POS Modern</h1>
             </div>
             <div class="user-info">
-                <span id="fecha"></span>
+                <span id="fechaHora"></span>
             </div>
         </div>
     </header>
 
-    <!-- NAVEGACIÓN -->
+    <!-- SIDEBAR -->
     <nav class="sidebar">
         <ul>
             <li onclick="showSection('ventas')"><i class="fas fa-shopping-cart"></i> Ventas</li>
@@ -34,9 +32,9 @@
         </ul>
     </nav>
 
-    <!-- CONTENIDO PRINCIPAL -->
+    <!-- MAIN CONTENT -->
     <main class="main-content">
-        <!-- SECCIÓN VENTAS -->
+        <!-- VENTAS -->
         <section id="ventas" class="section active">
             <div class="section-header">
                 <h2><i class="fas fa-shopping-cart"></i> Punto de Venta</h2>
@@ -44,29 +42,33 @@
             <div class="pos-container">
                 <div class="pos-left">
                     <div class="search-product">
-                        <input type="text" id="searchProduct" placeholder="🔍 Buscar producto...">
+                        <input type="text" id="searchProduct" placeholder="🔍 Escanear o buscar producto...">
                         <button onclick="addProductManual()">+ Manual</button>
                     </div>
                     <div class="cart-items" id="cartItems">
-                        <!-- Productos del carrito se cargan aquí -->
+                        <div class="empty-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>Carrito vacío</p>
+                            <small>Busca o escanea productos</small>
+                        </div>
                     </div>
                 </div>
                 <div class="pos-right">
                     <div class="total-info">
                         <h3>Total: $<span id="totalAmount">0.00</span></h3>
                         <button class="btn-pay" onclick="processSale()">
-                            <i class="fas fa-credit-card"></i> Cobrar
+                            <i class="fas fa-credit-card"></i> Procesar Venta
                         </button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SECCIÓN INVENTARIO -->
+        <!-- INVENTARIO -->
         <section id="inventario" class="section">
             <div class="section-header">
                 <h2><i class="fas fa-boxes"></i> Inventario</h2>
-                <button class="btn-add" onclick="showInventoryModal('add')">
+                <button class="btn-add" onclick="showInventoryModal()">
                     <i class="fas fa-plus"></i> Nuevo Producto
                 </button>
             </div>
@@ -86,11 +88,11 @@
             </div>
         </section>
 
-        <!-- SECCIÓN PROVEEDORES -->
+        <!-- PROVEEDORES -->
         <section id="proveedores" class="section">
             <div class="section-header">
                 <h2><i class="fas fa-truck"></i> Proveedores</h2>
-                <button class="btn-add" onclick="showProviderModal('add')">
+                <button class="btn-add" onclick="showProviderModal()">
                     <i class="fas fa-plus"></i> Nuevo Proveedor
                 </button>
             </div>
@@ -110,7 +112,7 @@
             </div>
         </section>
 
-        <!-- SECCIÓN FACTURAS -->
+        <!-- FACTURAS -->
         <section id="facturas" class="section">
             <div class="section-header">
                 <h2><i class="fas fa-file-invoice"></i> Facturas</h2>
@@ -123,7 +125,7 @@
                             <th>Cliente</th>
                             <th>Total</th>
                             <th>Fecha</th>
-                            <th>Acciones</th>
+                            <th>Ver</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -131,7 +133,7 @@
             </div>
         </section>
 
-        <!-- SECCIÓN CONTACTOS -->
+        <!-- CONTACTOS -->
         <section id="contactos" class="section">
             <div class="section-header">
                 <h2><i class="fas fa-address-book"></i> Contactos</h2>
@@ -146,7 +148,6 @@
                             <th>Nombre</th>
                             <th>Email</th>
                             <th>Teléfono</th>
-                            <th>Mensaje</th>
                             <th>Fecha</th>
                         </tr>
                     </thead>
@@ -156,47 +157,20 @@
         </section>
     </main>
 
-    <!-- MODALES -->
+    <!-- MODAL INVENTARIO -->
     <div id="inventoryModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('inventoryModal')">&times;</span>
-            <h3 id="modalTitle">Nuevo Producto</h3>
+            <h3 id="inventoryModalTitle">Nuevo Producto</h3>
             <form id="inventoryForm">
-                <input type="hidden" id="editId">
-                <input type="text" id="productName" placeholder="Nombre del producto">
-                <input type="number" id="productStock" placeholder="Stock">
-                <input type="number" id="productPrice" placeholder="Precio ($)" step="0.01">
-                <button type="submit">Guardar</button>
+                <input type="text" id="productName" placeholder="Nombre del producto" required>
+                <input type="number" id="productStock" placeholder="Stock" required min="0">
+                <input type="number" id="productPrice" placeholder="Precio ($)" required min="0" step="0.01">
+                <button type="submit">Guardar Producto</button>
             </form>
         </div>
     </div>
 
+    <!-- MODAL PROVEEDOR -->
     <div id="providerModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('providerModal')">&times;</span>
-            <h3 id="providerTitle">Nuevo Proveedor</h3>
-            <form id="providerForm">
-                <input type="hidden" id="editProviderId">
-                <input type="text" id="providerName" placeholder="Nombre">
-                <input type="tel" id="providerPhone" placeholder="Teléfono">
-                <input type="email" id="providerEmail" placeholder="Email">
-                <button type="submit">Guardar</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="contactModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('contactModal')">&times;</span>
-            <h3>Contacto</h3>
-            <form id="contactForm">
-                <input type="text" id="contactName" placeholder="Nombre" required>
-                <input type="email" id="contactEmail" placeholder="Email" required>
-                <input type="tel" id="contactPhone" placeholder="Teléfono">
-                <textarea id="contactMessage" placeholder="Mensaje" required></textarea>
-                <button type="submit">Enviar</button>
-            </form>
-        </div>
-    </div>
-</body>
-</html>
+        <div class="
